@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Urban Sprawl Bantul</title>
+    <link rel="stylesheet" href="library/leaflet/leaflet.css" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="library/leaflet/leaflet.js"></script>
+    <script src="library/leaflet-providers-master/leaflet-providers.js"></script>
+    <script src="library/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="map">
+        <script>
+            var map = L.map('map').setView([-7.919207, 110.343587], 12);
+
+            var baseLayers = {
+                'Esri WorldTopoMap': L.tileLayer.provider('Esri.WorldTopoMap'),
+                'Esri WorldImagery': L.tileLayer.provider('Esri.WorldImagery').addTo(map),
+                'OSM Default': L.tileLayer.provider('OpenStreetMap.DE'),
+                'OSM France': L.tileLayer.provider('OpenStreetMap.France')
+            };
+
+
+            /* Memanggil Layer Urban Sprawl */
+            var UrbanSprawl = L.geoJson(null, {
+                style: function(feature) {
+                    return {
+                        color: "black",
+                        fillColor: KlasPersebaran[feature.properties.Klas],
+                        weight: 0.3,
+                        opacity: 0,
+                        fillOpacity: 0.7
+                    };
+                },
+                onEachFeature: function( feature, layer ){
+                    layer.bindPopup(
+                        "Klas Urban Sprawl : " + "<left>" + feature.properties.Klas + "</left>" + "<br>" +
+                        "Luas :" + "<left>" + feature.properties.Shape_Area + "</left>" + " m2"
+                        )
+                }
+            });
+            $.getJSON("data/Urban_S_Bantul.json", function(data) {
+                UrbanSprawl.addData(data);
+            });
+
+			/* Merubah Tampilan Warna Berdasar Atribut Klas Urban */
+			var KlasPersebaran = {
+				"Rendah":"#04c71b",
+				"Sedang":"#fac507",
+				"Tinggi":"#fc3d03",
+			};
+
+            var mapLayers = {
+                'Urban Sprawl': UrbanSprawl
+            };
+
+            L.control.layers(baseLayers, mapLayers).addTo(map);
+        </script>
+    </div>
+</body>
+
+</html>
